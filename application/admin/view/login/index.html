@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta charset="UTF-8">
+    <title><?=$title?></title>
+    <link type="image/vnd.microsoft.icon" href="/static/images/favicon.png" rel="shortcut icon">
+    <link href="/static/css/bootstrap.min.css?ver=<?php echo time();?>" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/caomei/style.css">
+    <script src="/static/js/jquery.min.js"></script>
+</head>
+<body>
+<style>
+    #login{
+        margin: 0;
+    }
+    .login-form{
+        border-radius: 3px;
+        float: none;
+        margin: 0 auto;
+        margin-top: 10em;
+        -webkit-box-shadow: -4px 7px 46px 2px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: -4px 7px 46px 2px rgba(0, 0, 0, 0.1);
+        -o-box-shadow: -4px 7px 46px 2px rgba(0, 0, 0, 0.1);
+        box-shadow: -4px 7px 46px 2px rgba(0, 0, 0, 0.1);
+        background: #ffffff;
+    }
+    .login-header{
+        margin-top: 20px;
+    }
+    .login-input{
+        margin: 30px 0px 30px 0px;
+    }
+    .form-control{
+        border: 0px;
+        border-bottom: 1px solid #e5e5e7;
+    }
+    .submit{
+        background-color: #33cabb;
+        border: 0px;
+        color: #fff;
+        padding: 5px 25px 5px 25px;
+        width: 100%;
+    }
+    input{
+        outline: none;
+    }
+    input:focus{
+        outline: none;
+    }
+    .form-control:focus {
+        color: #495057;
+        background-color: #fff;
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: none;
+    }
+</style>
+<div id="login" class="row">
+    <div class="login-form col-md-3">
+        <form action="" method="post">
+            <div class="login-header">
+                <p>登录到管理中心</p>
+            </div>
+            <div class="login-username login-input">
+                <input type="text" name="username" class="form-control" id="username" placeholder="用户名或邮箱" autocomplete="off">
+            </div>
+            <div class="login-password login-input">
+                <input type="password" name="password" class="form-control" id="password" placeholder="用户密码" autocomplete="off">
+            </div>
+            <div class="login-remember login-input">
+                <label for="remember"><input type="checkbox" name="remember" value="remember" checked="checked" id="remember"> 记住账号</label>
+            </div>
+            <div class="login-submit login-input">
+                <input type="submit" value="开始登录" class="submit">
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
