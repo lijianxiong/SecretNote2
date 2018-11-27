@@ -17,9 +17,9 @@ return [
     // 数据库名
     'database'        => 'notepad',
     // 用户名
-    'username'        => 'notepad',
+    'username'        => 'root',
     // 密码
-    'password'        => 'lijianxiong09A',
+    'password'        => 'root',
     // 端口
     'hostport'        => '',
     // 连接dsn
