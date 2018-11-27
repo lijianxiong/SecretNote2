@@ -16,8 +16,7 @@ class Search extends Base
         $keyword = $data['keyword'];
         $result = Db::name('content')
             ->where('user_id',$this->userId())
-            ->where('content', 'like','%'.$keyword.'%')
-            ->where('title', 'like', '%'.$keyword.'%')
+            ->where('title|content','like','%'.$keyword.'%')
             ->where('del',0)
             ->select();
         $category = $this->getCategory();

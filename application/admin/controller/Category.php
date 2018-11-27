@@ -64,6 +64,7 @@ class Category extends Base
         $data = Db::name('content')
             ->where('user_id',$this->userId())
             ->where('category_id',$id)
+            ->order('id','desc')
             ->where('del',0)
             ->select();
         $category = Db::name('category')

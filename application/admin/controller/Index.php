@@ -51,4 +51,33 @@ class Index extends Base
         ]);
         return $this->fetch('/index');
     }
+
+    public function links(){
+        $result = Db::name('content')
+            ->where('user_id',$this->userId())
+            ->where('del',0)
+            ->where('links','<>',1)
+            ->order('create_time','desc')
+            ->select();
+        $userCategory = $this->getCategory();
+        $this->assign([
+            'title' => '外链中心',
+            'nav_cur' => 'links',
+            'result' => $result,
+            'category' =>$userCategory
+        ]);
+        return $this->fetch('/index');
+    }
+
+
+
+    public function oneRead(){
+        $res = Db::name('content')
+            ->where('user_id',$this->userId())
+            ->where('del',0)
+            ->order('id','desc')
+            ->limit(1)
+            ->find();
+        return json_encode($res);
+    }
 }

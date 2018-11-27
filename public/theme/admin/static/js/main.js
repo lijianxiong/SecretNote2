@@ -26,6 +26,7 @@ function geturlvar(variable) {
 //         toggleItem(item);
 //     }
 // );
+
 $('.post-list').on('click', '.item-setting', function () {
     let id = $(this).data('id');
     let item = $('#dropdown-'+id);
@@ -37,7 +38,16 @@ $('.user-info').click(
         toggleItem(dropdownUser);
     }
 );
+function articleImagesClick(){
+    $('.article-content img').each(function(i){
+        if (! this.parentNode.href) {
+            $(this).wrap("<a href='"+this.src+"'></a>");
+        }
+    });
+    $('.article-content a').attr("target", "_blank");
+}
 $('.post-list').on('click', '.a-item', function () {
+    // $('#article-body').css('display','block');
     $(".content").remove();
     setTimeout(function(){$(".article-content").prepend("<div id='markdown' class='content'></div>");},10);
     let id = $(this).data('id');
@@ -52,6 +62,7 @@ $('.post-list').on('click', '.a-item', function () {
         });
         $('.article-title h4').html(item.title);
         $('.create-times').html(timestampToTime(item.create_time));
+        articleImagesClick();
     });
 });
 $('#article-body,.sidebar,#write-item,#layout').click(
@@ -121,6 +132,19 @@ function action(url,id,type,dbname,success,error) {
     );
 }
 $(function(){
+    $.post("/admin/index/oneread", {
+        //'id': id
+    }, function (data) {
+        let item = JSON.parse(data);
+        let testEditormdView;
+        testEditormdView = editormd.markdownToHTML("markdown", {
+            markdown        : item.content ,
+            htmlDecode      : "style,script,iframe",
+        });
+        $('.article-title h4').html(item.title);
+        $('.create-times').html(timestampToTime(item.create_time));
+        articleImagesClick();
+    });
     //点击加载更多
     $('.pager li:nth-child(2) a').click(function() {
         let hrefThis = $(this);

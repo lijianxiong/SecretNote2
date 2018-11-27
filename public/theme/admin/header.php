@@ -35,7 +35,7 @@
                 </div>
                 <div class="search-input col-md-11">
                     <form class="" action="/admin/search" method="get">
-                        <input type="text" name="keyword" placeholder="Search...">
+                        <input type="text" name="keyword" placeholder="搜索感兴趣的知识和文章">
                     </form>
                 </div>
                 </div>

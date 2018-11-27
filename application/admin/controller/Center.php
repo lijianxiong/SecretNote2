@@ -17,7 +17,7 @@ class Center extends Base
             ->where('user_id',$this->userId())
             ->where('del',0)
             ->order('create_time','desc')
-            ->paginate(5,true, [
+            ->paginate(20,true, [
                 'page'     => $page,
                 'path'     => $path.'[PAGE]'
             ]);

@@ -25,16 +25,36 @@ class Login extends Controller
         $data   = input('post.');
         $result = $this->validate($data,'Login');
         if($result === true){
-            $password = $data['password'];
-            $validate = $data['username'];
+            $password = htmlspecialchars($data['password']);
+            $validate = htmlspecialchars($data['username']);
             $user = $user = Db::name('user')->where('username',$validate)->whereOr('email',$validate)->find();
             if (!empty($user)){
                 if ($user['username'] === $validate || $user['email'] === $validate ){
                     if ($user['password'] == md5(sha1($password))){
-                        Session::set('user.id',$user['id']);
-                        Session::set('user.username',$user['username']);
-                        $sendMail = new Mailhelper();
-                        $sendMail->sendMail('4020426@qq.com','账号登录提醒!',date('Y-m-d H:i:s',time()).'登录成功!IP地址为:'.$this->getIp());
+                        $siteSetting = Db::name('setting')
+                            ->where('type','admin')
+                            ->value('content');
+                        $setting = json_decode($siteSetting,true);
+                        $settingArray = [
+                            'site_name' => $setting['site_name'],
+                            'admin_email' => $setting['admin_email'],
+                            'web_url' => $setting['web_url'],
+                            'keyword' => $setting['keyword'],
+                            'description' => $setting['description']
+                        ];
+                        Session::set('setting',$settingArray);
+                        $userArray = [
+                            'id' => $user['id'],
+                            'username' => $user['username'],
+                            'nickname' => $user['nickname'],
+                            'email' => $user['email'],
+                            'face_url' => $user['face_url'],
+                            'description' => $user['description'],
+                            'user_group' => $user['user_group']
+                        ];
+                        Session::set('user',$userArray);
+                        //$sendMail = new Mailhelper();
+                        //$sendMail->sendMail('4020426@qq.com','账号登录提醒!',date('Y-m-d H:i:s',time()).'登录成功!IP地址为:'.$this->getIp());
                         return $this->redirect('/admin/center');
                     }
                 }

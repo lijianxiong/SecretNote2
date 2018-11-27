@@ -13,6 +13,7 @@ use think\Route;
 Route::rule('openlinks/[:code]','index/openlinks/index');
 //Route::rule('openlinks/show/[:code]','index/openlinks/show');
 Route::rule('admin/bookmark','admin/index/bookmark');
+Route::rule('admin/links','admin/index/links');
 Route::rule('admin/center/[:page]','admin/center/index');
 //Route::rule('admin/category','admin/index/category');
 //Route::rule('admin/category/update','admin/category/update');

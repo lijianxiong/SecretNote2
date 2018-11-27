@@ -13,6 +13,9 @@ use think\Db;
 class Openlinks extends Controller
 {
     public function index($code){
+        if (empty($code)){
+            return '没密钥看你麻痹!';
+        }
 //        $result = $this->queryDate($code);
 //        if ($result['links'] == 1){
 //            return false;
@@ -33,6 +36,6 @@ class Openlinks extends Controller
         $result = Db::name('content')
             ->where('links',$code)
             ->find();
-        return json_encode($result);
+        return $result;
     }
 }

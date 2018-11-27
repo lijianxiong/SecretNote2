@@ -6,7 +6,7 @@
             <div class="col-md-4 category-item" id="post-item-<?=$item['id']?>">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h5 class="category-name"><?=$item['name']?></h5>
+                        <h5 class="category-name"><a href="/admin/category/show/id/<?=$item['id']?>"><?=$item['name']?></a></h5>
                         <p class="category-slug"><?=$item['slug']?></p>
                     </div>
                     <div class="flexbox text-center">

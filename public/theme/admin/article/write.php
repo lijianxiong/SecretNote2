@@ -13,7 +13,7 @@
         <form action="/admin/article/update" method="post">
             <input type="hidden" name="id" value="<?=$data['id']?>">
         <div class="c-title a-input">
-            <input class="form-control" name="title" type="text" value="<?=$data['title']?>" placeholder="输入创作标题">
+            <input class="form-control" name="title" type="text" value="<?=$data['title']?>" placeholder="请在此输入创作标题">
         </div>
             <div class="c-category a-input">
                 <select name="category_id">
@@ -23,10 +23,10 @@
                 </select>
             </div>
         <div class="c-time a-input">
-            <input class="form-control" name="create_time" type="text" value="<?=$data['create_time']?>" placeholder="输入创作时间">
+            <input class="form-control" name="create_time" type="hidden" value="<?=$data['create_time']?>" placeholder="输入创作时间">
         </div>
         <div class="c-desc a-input">
-            <input type="text" class="form-control" name="description" placeholder="输入简介内容建议200文字以内..." value="<?=$data['description']?>">
+            <input type="hidden" class="form-control" name="description" placeholder="输入简介内容建议200文字以内..." value="<?=$data['description']?>">
         </div>
         <div id="test-editormd" class="a-input">
             <textarea style="display:none;" name="content"><?=$data['content']?></textarea>
@@ -44,7 +44,7 @@
         $(function() {
             testEditor = editormd("test-editormd", {
                 width: "100%",
-                height: '60vh',
+                height: '72vh',
                 path : '/static/markdown/lib/',
                 codeFold : true,
                 saveHTMLToTextarea : true,

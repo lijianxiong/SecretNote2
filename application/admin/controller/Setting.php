@@ -7,13 +7,16 @@
  */
 
 namespace app\admin\controller;
-
-
+use think\Session;
 use think\Db;
 
 class Setting extends Base
 {
     public function index(){
+        $isAdmin = $this->userResult['user_group'];
+        if ($isAdmin !== 1){
+            return $this->redirect('/admin/center');
+        }
         $result = Db::name('setting')
             ->where('type','admin')
             ->value('content');
@@ -27,11 +30,6 @@ class Setting extends Base
     }
     public function update(){
         $data = input('post.');
-//        $result = Db::name('setting')
-//            ->where('type','admin')
-//            ->update([
-//                'content' => json_encode($data)
-//            ]);
         $result = Db::name('setting')
             ->where('type','admin')
             ->update([

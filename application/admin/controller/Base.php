@@ -16,10 +16,14 @@ use think\Session;
 class Base extends Controller
 {
     public $_N;
+    protected $userResult;
     public function _initialize()
     {
         parent::_initialize();
-        $flag = Session::get('user.id');
+        $setting = Session::get('setting');
+        //read userinfo
+        $this->userResult = Session::get('user');
+        $flag = $this->userResult['id'];
         if (!$flag) {
             $this->redirect('/admin/login');
             return false;
@@ -38,35 +42,27 @@ class Base extends Controller
             define('__THEME__','./theme/admin');
             define('__PUBLIC__','/theme/admin');
         }
-        $resultSetting = Db::name('setting')
-            ->where('type','admin')
-            ->value('content');
-        $setting = json_decode($resultSetting,true);
-        //read userinfo
-        $userResult = Db::name('user')
-        ->where('id',$this->userId())
-        ->find();
         $this->assign(
             [
                 'title' => $setting['site_name'],
                 'description' => $setting['description'],
                 'setting' => $setting,
-                'userInfo' => $userResult,
+                'userInfo' => $this->userResult,
                 'navBar' => $this->navBar(),
                 '_n' => $this->_N
             ]
         );
     }
     public function userId(){
-        $userId = Session::get('user.id');
+        $userId = $this->userResult['id'];
         return $userId;
     }
 
     public function userCategory(){
         $GetCategoryAll = Db::name('category')
-            ->where('user_id', $this->userId())
-            ->where('del',0)
-            ->select();
+        ->where('user_id',$this->userId())
+        ->where('del',0)
+        ->select();
         return $GetCategoryAll;
     }
 
@@ -77,6 +73,9 @@ class Base extends Controller
             ],
             [
                 ['bookmark', '/admin/bookmark', '<i class="czs-book-l"></i> 收藏中心']
+            ],
+            [
+                ['links', '/admin/links', '<i class="czs-share"></i> 外链中心']
             ],
             [
                 ['category', '/admin/category', '<i class="czs-newspaper-l"></i> 创作分类']
@@ -115,14 +114,14 @@ class Base extends Controller
         // 获取表单上传文件
         //$file = $request->file('file');
         $file = \think\Image::open(request()->file('editormd-image-file'));
-        $dirTime = iconv("UTF-8", "GBK", ROOT_PATH . 'public' . DS . 'upload/images/'.date('Ym',time()));
+        $dirTime = iconv("UTF-8", "GBK", ROOT_PATH . 'public' . DS . 'upload/'.$this->userId().'/images/'.date('Ym',time()));
         if (file_exists($dirTime));
         else
             mkdir ($dirTime,0777,true);
         $fileUrl = $dirTime. DS .md5(time()).'.jpg';
         $width = $file->width();
-        if ($width >= 1280){
-            $info = $file->thumb(1280,720)->save($fileUrl);
+        if ($width >= 2048){
+            $info = $file->thumb(1440,900)->save($fileUrl);
         }else{
             $info = $file->save($fileUrl);
         }
@@ -140,168 +139,107 @@ class Base extends Controller
         }
     }
 
+    public function findResult($dbname,$id){
+        $result = Db::name($dbname)
+            ->where('user_id',$this->userId())
+            ->where('id',$id)
+            ->find();
+        return $result;
+    }
+
+    public function selectResult($dbname,$param){
+        $result = Db::name($dbname)
+            ->where($param)
+            ->find();
+        return $result;
+    }
+
+    public function deleteResult($dbname,$id){
+        $result = Db::name($dbname)
+            ->where('id',$id)
+            ->where('user_id',$this->userId())
+            ->delete();
+        return $result;
+    }
+
+    public function updateResult($dbname,$id,$param){
+        $result = Db::name($dbname)
+            ->where('id',$id)
+            ->where('user_id',$this->userId())
+            ->update($param);
+        return $result;
+    }
+
+    protected function randNum($id){
+        $str = 'abcdefghijklnmopqrstuvwxyz';
+        $links = substr(str_shuffle($str),0,2).$id;
+        return $links;
+    }
+
     public function action($id){
         $data = input('post.');
         $type = $data['type'];
         $dbname = $data['dbname'];
         if ($type == 'del'){
-            $result = Db::name($dbname)
-                ->where('id',$id)
-                ->where('user_id',$this->userId())
-                ->update([
-                    'del' => 1
-                ]);
+            $param = ['del' => 1];
+            $result = $this->updateResult($dbname,$id,$param);
             return $this->state($result);
         }
-        if ($type == 'untrash'){
-            $result = Db::name($dbname)
-                ->where('id',$id)
-                ->where('user_id',$this->userId())
-                ->update(
-                    [
-                        'del' => 0
-                    ]
-                );
+        if ($type == 'unTrash'){
+            $param = ['del' => 0];
+            $result = $this->updateResult($dbname,$id,$param);
             return $this->state($result);
         }
         if ($type == 'destroy'){
-            $result = Db::name($dbname)
-                ->where('id',$id)
-                ->where('user_id',$this->userId())
-                ->delete();
+            $result = $this->deleteResult($dbname,$id);
             return $this->state($result);
         }
         if ($type == 'notice'){
-            $result = Db::name($dbname)
-                ->where('id',$id)
-                ->delete();
+            $result = $this->deleteResult($dbname,$id);
             return $this->state($result);
         }
         if ($type == 'star'){
-            $article = Db::name($dbname)
-                ->where('user_id',$this->userId())
-                ->where('id',$id)
-                ->find();
+            $article = $this->findResult($dbname,$id);
             $star = $article['star'];
             if ($star == 0){
-                Db::name($dbname)
-                    ->where('user_id',$this->userId())
-                    ->where('id',$id)
-                    ->update([
-                        'star' => 1
-                    ]);
+                $param = ['star' => 1];
+                $this->updateResult($dbname,$id,$param);
                 return 1;
             }else{
-                Db::name($dbname)
-                    ->where('user_id',$this->userId())
-                    ->where('id',$id)
-                    ->update([
-                        'star' => 0
-                    ]);
-                return 2;
-            }
-        }
-        if ($type == 'share'){
-            $result = Db::name($dbname)
-                ->where('id',$id)
-                ->where('user_id',$this->userId())
-                ->find();
-            $array = [];
-            for ($i = 1; $i <= 2; $i++) {
-                $array[$i] = chr(rand(97, 122));
-            }
-            $random = implode('',$array);
-            $links = $random.$id;
-            if ($result['links'] == 1){
-                $res = Db::name($dbname)
-                    ->where('id',$id)
-                    ->where('user_id',$this->userId())
-                    ->update([
-                        'links' => $links,
-                        'status' => 1
-                    ]);
-                return $this->state($res);
-            }else{
-                Db::name($dbname)
-                    ->where('id',$id)
-                    ->where('user_id',$this->userId())
-                    ->update([
-                        'links' => 1,
-                        'status' => 1
-                    ]);
+                $param = ['star' => 0];
+                $this->updateResult($dbname,$id,$param);
                 return 2;
             }
         }
         if ($type == 'link'){
-            $article = Db::name($dbname)
-                ->where('user_id',$this->userId())
-                ->where('id',$id)
-                ->find();
+            $article = $this->findResult($dbname,$id);
             $link = intval($article['links']);
-            $array = [];
-            for ($i = 1; $i <= 2; $i++) {
-                $array[$i] = chr(rand(97, 122));
-            }
-            $random = implode('',$array);
-            $links = $random.$id;
+            $links = $this->randNum($id);
             if ($link == 1){
-                Db::name($dbname)
-                    ->where('user_id',$this->userId())
-                    ->where('id',$id)
-                    ->update(
-                        [
-                            'links' => $links
-                        ]
-                    );
+                $param = ['links' => $links];
+                $this->updateResult($dbname,$id,$param);
                 return 1;
             }else{
-                Db::name($dbname)
-                    ->where('user_id',$this->userId())
-                    ->where('id',$id)
-                    ->update(
-                        [
-                            'links' => 1
-                        ]
-                    );
+                $param = ['links' => 1];
+                $this->updateResult($dbname,$id,$param);
                 return 2;
             }
         }
-        if ($type == 'linkdel'){
-            $result = Db::name($dbname)
-                ->where('user_id',$this->userId())
-                ->where('id',$id)
-                ->update(
-                    [
-                        'links' => 1
-                    ]
-                );
+        if ($type == 'linkel'){
+            $param = ['links' => 1];
+            $result = $this->updateResult($dbname,$id,$param);
             return $this->state($result);
         }
         if ($type == 'star'){
-            $result = Db::name($dbname)
-                ->where('user_id',$this->userId())
-                ->where('id',$id)
-                ->find();
+            $result = $this->findResult($dbname,$id);
             $star = $result['star'];
             if ($star == 0){
-                Db::name($dbname)
-                    ->where('user_id',$this->userId())
-                    ->where('id',$id)
-                    ->update(
-                        [
-                            'star' => 1
-                        ]
-                    );
+                $param = ['star' => 1];
+                $this->updateResult($dbname,$id,$param);
                 return 1;
             }else{
-                Db::name($dbname)
-                    ->where('user_id',$this->userId())
-                    ->where('id',$id)
-                    ->update(
-                        [
-                            'star' => 0
-                        ]
-                    );
+                $param = ['star' => 0];
+                $this->updateResult($dbname,$id,$param);
                 return 2;
             }
         }
